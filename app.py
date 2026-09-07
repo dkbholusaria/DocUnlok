@@ -10,11 +10,14 @@ import os
 import sys
 import logging
 
-from PyQt6.QtCore import Qt, QObject, QThread, pyqtSignal
+from PyQt6.QtCore import (
+    Qt, QObject, QThread, QTimer, QUrl, QMetaObject, Q_ARG, pyqtSignal, pyqtSlot,
+)
+from PyQt6.QtGui import QDesktopServices
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QFrame, QVBoxLayout, QHBoxLayout,
     QPushButton, QLineEdit, QLabel, QTableWidget, QTableWidgetItem,
-    QHeaderView, QFileDialog, QMessageBox, QAbstractItemView,
+    QHeaderView, QFileDialog, QMessageBox, QAbstractItemView, QDialog,
 )
 
 from themes import THEMES
@@ -80,6 +83,8 @@ class MainWindow(QMainWindow):
         root.addWidget(self._mk_main_panel(), 1)
         root.addWidget(self._mk_footer())
 
+        QTimer.singleShot(3000, self._check_for_update)
+
     # ── Header ────────────────────────────────────────────────────────────
 
     def _mk_header(self):
@@ -117,10 +122,37 @@ class MainWindow(QMainWindow):
         hl.addWidget(name_block)
         hl.addStretch()
 
+        meta_block = QWidget()
+        meta_block.setStyleSheet("background:transparent;")
+        ml = QVBoxLayout(meta_block)
+        ml.setContentsMargins(0, 0, 0, 0)
+        ml.setSpacing(1)
+        ml.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+
         version_lbl = QLabel(f"v{__version__}")
         version_lbl.setStyleSheet(f"color:{t.text_muted}; font-size:11px; background:transparent; border:none;")
-        version_lbl.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        hl.addWidget(version_lbl)
+        version_lbl.setAlignment(Qt.AlignmentFlag.AlignRight)
+        ml.addWidget(version_lbl)
+
+        self._update_lnk = QLabel()
+        self._update_lnk.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self._update_lnk.setOpenExternalLinks(False)
+        self._update_lnk.linkActivated.connect(self._on_update_link_clicked)
+        self._update_lnk.setFixedHeight(16)
+        ml.addWidget(self._update_lnk)
+
+        hl.addWidget(meta_block)
+        hl.addSpacing(12)
+
+        about_btn = QPushButton("ⓘ")  # ⓘ
+        about_btn.setFixedSize(30, 30)
+        about_btn.setToolTip("About PDF Password Remover")
+        about_btn.setStyleSheet(
+            f"QPushButton {{ background:transparent; border:none; font-size:18px; color:{t.text_muted}; }}"
+            f"QPushButton:hover {{ color:{t.accent}; }}"
+        )
+        about_btn.clicked.connect(self._show_about)
+        hl.addWidget(about_btn, 0, Qt.AlignmentFlag.AlignVCenter)
 
         return hdr
 
@@ -275,6 +307,129 @@ class MainWindow(QMainWindow):
             f"QLineEdit:focus {{ border-color:{t.border_focus}; background:{t.bg_input_focus}; }}"
             f"QLineEdit::placeholder {{ color:{t.text_muted}; }}"
         )
+
+    # ── About ─────────────────────────────────────────────────────────────
+
+    def _show_about(self):
+        dlg = QDialog(self)
+        dlg.setWindowTitle("About PDF Password Remover")
+        dlg.setFixedSize(420, 380)
+        dlg.setStyleSheet(
+            f"QDialog {{ background:{t.bg_window}; }}"
+            f"QLabel {{ border:none; background:transparent; color:{t.text_primary}; }}"
+        )
+
+        vl = QVBoxLayout(dlg)
+        vl.setContentsMargins(32, 26, 32, 26)
+        vl.setSpacing(0)
+
+        title_row = QHBoxLayout()
+        title_row.setSpacing(10)
+        icon_lbl = QLabel("\U0001F513")
+        icon_lbl.setStyleSheet("font-size:32px; background:transparent; border:none;")
+        title_row.addWidget(icon_lbl)
+        name_col = QVBoxLayout()
+        name_col.setSpacing(2)
+        name_lbl = QLabel("PDF Password Remover")
+        name_lbl.setStyleSheet(f"color:{t.text_primary}; font-size:18px; font-weight:700;")
+        ver_lbl = QLabel(f"Version {__version__}")
+        ver_lbl.setStyleSheet(f"color:{t.text_muted}; font-size:12px;")
+        name_col.addWidget(name_lbl)
+        name_col.addWidget(ver_lbl)
+        title_row.addLayout(name_col)
+        title_row.addStretch()
+        vl.addLayout(title_row)
+        vl.addSpacing(14)
+
+        desc = QLabel("A small desktop utility to strip password protection from PDF files, in place.")
+        desc.setStyleSheet(f"color:{t.text_primary}; font-size:13px;")
+        desc.setWordWrap(True)
+        vl.addWidget(desc)
+        vl.addSpacing(18)
+
+        div1 = QFrame()
+        div1.setFrameShape(QFrame.Shape.HLine)
+        div1.setStyleSheet(f"background:{t.border}; border:none; max-height:1px;")
+        vl.addWidget(div1)
+        vl.addSpacing(16)
+
+        contact_title = QLabel("Contact")
+        contact_title.setStyleSheet(f"color:{t.text_muted}; font-size:10px; font-weight:700; letter-spacing:1px;")
+        vl.addWidget(contact_title)
+        vl.addSpacing(8)
+
+        def _link_row(text: str, url: str | None = None):
+            row = QHBoxLayout()
+            row.setContentsMargins(0, 0, 0, 0)
+            if url:
+                lbl = QLabel(f'<a href="{url}" style="color:{t.accent}; text-decoration:none;">{text}</a>')
+                lbl.setOpenExternalLinks(True)
+            else:
+                lbl = QLabel(text)
+                lbl.setStyleSheet(f"color:{t.text_primary}; font-size:13px; font-weight:600;")
+            lbl.setStyleSheet(lbl.styleSheet() + "font-size:13px; background:transparent; border:none;")
+            row.addWidget(lbl)
+            row.addStretch()
+            return row
+
+        vl.addLayout(_link_row("CA. Deepak Bhholusaria"))
+        vl.addSpacing(6)
+        vl.addLayout(_link_row("deepak@ailearrning.guru", "mailto:deepak@ailearrning.guru"))
+        vl.addSpacing(6)
+        vl.addLayout(_link_row("linkedin.com/in/bhholusaria", "https://www.linkedin.com/in/bhholusaria/"))
+        vl.addSpacing(6)
+        vl.addLayout(_link_row("github.com/dkbholusaria/PdfPasswordRemover", "https://github.com/dkbholusaria/PdfPasswordRemover"))
+        vl.addSpacing(16)
+
+        div2 = QFrame()
+        div2.setFrameShape(QFrame.Shape.HLine)
+        div2.setStyleSheet(f"background:{t.border}; border:none; max-height:1px;")
+        vl.addWidget(div2)
+        vl.addSpacing(12)
+
+        copy = QLabel("© 2026 Deepak Bhholusaria. All rights reserved.")
+        copy.setStyleSheet(f"color:{t.text_muted}; font-size:11px;")
+        vl.addWidget(copy)
+        vl.addStretch()
+
+        close_btn = QPushButton("Close")
+        close_btn.setFixedWidth(100)
+        close_btn.setStyleSheet(self._accent_btn_style())
+        close_btn.clicked.connect(dlg.accept)
+        btn_row = QHBoxLayout()
+        btn_row.addStretch()
+        btn_row.addWidget(close_btn)
+        vl.addLayout(btn_row)
+
+        dlg.exec()
+
+    # ── Update check ──────────────────────────────────────────────────────
+
+    def _check_for_update(self):
+        from updater import check_for_update
+
+        def _cb(tag, url):
+            # check_for_update runs the callback from a background thread —
+            # marshal back onto the GUI thread before touching any widget.
+            QMetaObject.invokeMethod(
+                self, "_on_update_result",
+                Qt.ConnectionType.QueuedConnection,
+                Q_ARG(str, tag or ""), Q_ARG(str, url or ""),
+            )
+
+        check_for_update(_cb)
+
+    @pyqtSlot(str, str)
+    def _on_update_result(self, tag: str, url: str):
+        if tag:
+            self._update_url = url
+            self._update_lnk.setText(
+                f'<a href="#" style="color:{t.accent}; font-size:11px;">&#11015; v{tag} available</a>'
+            )
+
+    def _on_update_link_clicked(self):
+        if getattr(self, "_update_url", None):
+            QDesktopServices.openUrl(QUrl(self._update_url))
 
     # ── File selection ───────────────────────────────────────────────────
 
