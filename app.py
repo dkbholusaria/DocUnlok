@@ -134,6 +134,11 @@ class MainWindow(QMainWindow):
         version_lbl.setAlignment(Qt.AlignmentFlag.AlignRight)
         ml.addWidget(version_lbl)
 
+        copy_lbl = QLabel("© 2026 Deepak Bhholusaria")
+        copy_lbl.setStyleSheet(f"color:{t.text_muted}; font-size:11px; background:transparent; border:none;")
+        copy_lbl.setAlignment(Qt.AlignmentFlag.AlignRight)
+        ml.addWidget(copy_lbl)
+
         self._update_lnk = QLabel()
         self._update_lnk.setAlignment(Qt.AlignmentFlag.AlignRight)
         self._update_lnk.setOpenExternalLinks(False)
