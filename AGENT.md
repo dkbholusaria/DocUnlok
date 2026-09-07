@@ -1,6 +1,6 @@
-# PdfPasswordRemover — Developer Guide & AI Agent Guidelines
+# DocUnlok — Developer Guide & AI Agent Guidelines
 
-PdfPasswordRemover is a small PyQt6 desktop utility that strips password protection from PDF files. Select one or more password-protected PDFs, supply the password, and the tool decrypts them in place.
+DocUnlok is a small PyQt6 desktop utility that strips password protection from PDF files. Select one or more password-protected PDFs, supply the password, and the tool decrypts them in place.
 
 ---
 
@@ -26,7 +26,7 @@ PdfPasswordRemover is a small PyQt6 desktop utility that strips password protect
 ## Project Layout
 
 ```
-PdfPasswordRemover/
+DocUnlok/
 ├── app.py                  # Main window — all Qt widgets, batch runner
 ├── version.py               # Single source of truth: __version__ = "X.Y.Z"
 ├── themes.py                # ThemeColors dataclass, dark/light theme builders
@@ -78,6 +78,6 @@ python app.py
 powershell -ExecutionPolicy Bypass -File scripts\setup_and_build.ps1
 ```
 
-Produces `dist\PdfPasswordRemover.exe` (standalone, no installer).
+Produces `dist\DocUnlok.exe` (standalone, no installer).
 
 Prerequisite: `pip install nuitka ordered-set zstandard` (handled by the build script).

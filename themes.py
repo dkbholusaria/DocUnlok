@@ -1,5 +1,5 @@
 """
-themes.py — Centralised colour/font definitions for PdfPasswordRemover.
+themes.py — Centralised colour/font definitions for DocUnlok.
 
 Adding a new theme:
   1. Add an entry to THEMES dict with a ThemeColors instance.

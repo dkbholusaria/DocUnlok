@@ -1,4 +1,4 @@
-# PDF Password Remover
+# DocUnlok
 
 **v1.0.0** — A small standalone desktop utility that strips password protection from PDF files. Select one or more password-protected PDFs, supply the password, and it decrypts them in place.
 
@@ -38,13 +38,13 @@ Requires Python 3.10+ and Nuitka.
 powershell -ExecutionPolicy Bypass -File scripts\setup_and_build.ps1
 ```
 
-This creates a virtual environment, installs dependencies, and compiles the app with Nuitka to `dist\PdfPasswordRemover.exe` — no Python installation needed to run it.
+This creates a virtual environment, installs dependencies, and compiles the app with Nuitka to `dist\DocUnlok.exe` — no Python installation needed to run it.
 
 Manual build (if you'd rather not use the script):
 
 ```powershell
 pip install nuitka ordered-set zstandard
 python -m nuitka --standalone --onefile --windows-console-mode=disable ^
-  --output-dir=dist --output-filename=PdfPasswordRemover.exe ^
+  --output-dir=dist --output-filename=DocUnlok.exe ^
   --enable-plugin=pyqt6 --assume-yes-for-downloads app.py
 ```

@@ -1,5 +1,5 @@
 """
-app.py — PdfPasswordRemover main window.
+app.py — DocUnlok main window.
 
 Select one or more password-protected PDFs from any location, supply the
 password, and strip the password protection in place. Batch runs on a
@@ -65,7 +65,7 @@ class Worker(QObject):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("PDF Password Remover")
+        self.setWindowTitle("DocUnlok")
         self.resize(820, 560)
         self.setStyleSheet(f"QMainWindow {{ background: {t.bg_window}; }}")
 
@@ -107,7 +107,7 @@ class MainWindow(QMainWindow):
         vl.setSpacing(3)
         vl.addStretch()
 
-        title = QLabel("PDF Password Remover")
+        title = QLabel("DocUnlok")
         title.setStyleSheet(
             f"color:{t.text_primary}; font-size:24px; font-weight:700; "
             f"background:transparent; border:none;"
@@ -151,7 +151,7 @@ class MainWindow(QMainWindow):
 
         about_btn = QPushButton("ⓘ")  # ⓘ
         about_btn.setFixedSize(30, 30)
-        about_btn.setToolTip("About PDF Password Remover")
+        about_btn.setToolTip("About DocUnlok")
         about_btn.setStyleSheet(
             f"QPushButton {{ background:transparent; border:none; font-size:18px; color:{t.text_muted}; }}"
             f"QPushButton:hover {{ color:{t.accent}; }}"
@@ -317,7 +317,7 @@ class MainWindow(QMainWindow):
 
     def _show_about(self):
         dlg = QDialog(self)
-        dlg.setWindowTitle("About PDF Password Remover")
+        dlg.setWindowTitle("About DocUnlok")
         dlg.setFixedSize(420, 380)
         dlg.setStyleSheet(
             f"QDialog {{ background:{t.bg_window}; }}"
@@ -335,7 +335,7 @@ class MainWindow(QMainWindow):
         title_row.addWidget(icon_lbl)
         name_col = QVBoxLayout()
         name_col.setSpacing(2)
-        name_lbl = QLabel("PDF Password Remover")
+        name_lbl = QLabel("DocUnlok")
         name_lbl.setStyleSheet(f"color:{t.text_primary}; font-size:18px; font-weight:700;")
         ver_lbl = QLabel(f"Version {__version__}")
         ver_lbl.setStyleSheet(f"color:{t.text_muted}; font-size:12px;")
@@ -383,7 +383,7 @@ class MainWindow(QMainWindow):
         vl.addSpacing(6)
         vl.addLayout(_link_row("linkedin.com/in/bhholusaria", "https://www.linkedin.com/in/bhholusaria/"))
         vl.addSpacing(6)
-        vl.addLayout(_link_row("github.com/dkbholusaria/PdfPasswordRemover", "https://github.com/dkbholusaria/PdfPasswordRemover"))
+        vl.addLayout(_link_row("github.com/dkbholusaria/DocUnlok", "https://github.com/dkbholusaria/DocUnlok"))
         vl.addSpacing(16)
 
         div2 = QFrame()

@@ -3,7 +3,7 @@ import urllib.request
 import json
 from version import __version__
 
-_REPO = "dkbholusaria/PdfPasswordRemover"
+_REPO = "dkbholusaria/DocUnlok"
 _API  = f"https://api.github.com/repos/{_REPO}/releases"
 
 
@@ -19,7 +19,7 @@ def check_for_update(callback):
                 _API,
                 headers={
                     "Accept": "application/vnd.github+json",
-                    "User-Agent": "PdfPasswordRemover",
+                    "User-Agent": "DocUnlok",
                 },
             )
             with urllib.request.urlopen(req, timeout=8) as r:
