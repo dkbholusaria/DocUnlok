@@ -1,2 +1,2 @@
 PyQt6>=6.11.0
-pikepdf>=10.7.2
+pikepdf>=10.13.0.post1
